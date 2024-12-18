@@ -2,6 +2,7 @@ import React from "react";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Header from "./components/Header";
 import SideMenu from "./components/SideMenu";
+import Login from "./components/Login";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
     <Header />
     <SideMenu />
     <Dashboard />
+    <Login />
     </div>
   );
 }
