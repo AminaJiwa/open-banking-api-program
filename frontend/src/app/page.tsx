@@ -1,16 +1,18 @@
 import React from "react";
 import Dashboard from "./pages/dashboard/Dashboard";
-import Header from "./components/Header";
-import SideMenu from "./components/SideMenu";
+import scss from "./page.module.scss";
 import Login from "./components/Login";
+import { useSession } from "next-auth/react";
 
-export default function Home() {
+const Home: React.FC = () => {
+  const { data: session } = useSession();
+
   return (
-    <div >
-    <Header />
-    <SideMenu />
-    <Dashboard />
-    <Login />
-    </div>
+    <main className={scss.main}>
+      {session && <Dashboard />}
+      {!session && <Login />}
+    </main>
   );
-}
+};
+
+export default Home;

@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "@mui/system";
 import AdbIcon from "@mui/icons-material/Adb"; 
 import NextLink from "next/link";
+import ThemeToggleButton from "./ThemeToggleButton";
 
 export type HeaderProps = {
     ColorModeContext: React.Context<{ toggleColorMode: () => void}>;
@@ -53,7 +54,7 @@ const Header = (props: HeaderProps) => {
               textDecoration: "none",
             }}
           >
-            DataSoft
+            Open Banking
           </Typography>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
@@ -72,7 +73,7 @@ const Header = (props: HeaderProps) => {
               textDecoration: "none",
             }}
           >
-            DataSoft
+            Open Banking
           </Typography>
           {tabletCheck && (
             <Box sx={{ paddingRight: 5, marginLeft: "auto" }}>
