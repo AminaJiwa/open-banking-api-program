@@ -1,3 +1,4 @@
+//Main
 .main {
     padding: 0 24px;
     max-width: 85rem;
@@ -12,7 +13,7 @@
         max-width: 92rem;
     }
 }
-
+//Footer
 .footer {
     position: absolute;
     bottom: -1rem;
@@ -41,4 +42,30 @@
         }
       }
     }
+  }
+
+  //Dashboard
+  .topCardsContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+  
+    @media screen and (min-width: 768px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+  
+  .dataCard {
+    padding: 20px;
+  }
+
+  //Side Menu
+  .drawerHeader {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 1rem;
+  }
+  
+  .link {
+    text-decoration: none;
   }

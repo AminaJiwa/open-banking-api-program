@@ -11,8 +11,8 @@ const Layout = (props: any) => {
   return (
     <>
       <Head>
-        <title>DataSoft - Data Dashboard</title>
-        <meta name="description" content="Data Dashboard" />
+        <title>Open Banking API Program</title>
+        <meta name="description" content="Open Banking API Program" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
