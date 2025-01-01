@@ -1,17 +1,19 @@
-export async function sendVerificationRequest(params) {
-    const { identifier: to, provider, url, theme } = params;
+import { SendVerificationRequestParams } from "next-auth/providers/email";
+
+export async function sendVerificationRequest(params: SendVerificationRequestParams & { apiKey: string, from: string}) {
+    const { identifier: to, provider, url, apiKey, from, expires, theme } = params;
     const { host } = new URL(url);
     const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${provider.apiKey}`, 
+            Authorization: `Bearer ${apiKey}`, 
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            from: provider.from, 
+            from: from, 
             to,
             subject: `Sign in to ${host}`,
-            html: html({ url, host, theme }),
+            html: html({ url, host}),
             text: text({ url, host}),
         }),
     })
@@ -22,19 +24,19 @@ export async function sendVerificationRequest(params) {
 
 }
 
-function html(params: { url: string, host: string, theme: Theme}) {
-    const { url, host, theme } = params;
+function html(params: { url: string, host: string}) {
+    const { url, host } = params;
 
     const escapedHost = host.replace(/\./g, "&#8203;.")
 
-    const brandColor = theme.brandColor || "#053b48";
+    const brandColor = "#053b48";
     const color = {
         background: "#f9f9f9",
         text: "#444",
         mainBackground: "#fff",
         buttonBackground: brandColor,
         buttonBorder: brandColor,
-        buttonText: theme.buttonText || "#fff",
+        buttonText: "#fff",
     }
 
     return `
@@ -68,4 +70,9 @@ function html(params: { url: string, host: string, theme: Theme}) {
       </table>
     </body>
     `
+}
+
+function text(params: { url: string, host: string}) {
+    const { url, host } = params;
+    return `Sign in to ${host} by clicking on the following link: ${url}`
 }

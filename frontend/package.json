@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/typeorm-adapter": "^2.7.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.2.1",
@@ -18,7 +19,8 @@
     "open-banking-api-program": "file:",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "sass": "^1.83.0"
+    "sass": "^1.83.0",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

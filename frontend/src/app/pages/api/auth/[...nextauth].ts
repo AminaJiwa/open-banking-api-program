@@ -1,52 +1,56 @@
-import NextAuth from 'next-auth';
-import { sendVerificationRequest } from "/authSendRequest";
-import Providers from 'next-auth/providers';
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextAuth, { Theme } from 'next-auth';
+import { sendVerificationRequest } from "./authSendRequest";
+import { EmailConfig } from 'next-auth/providers/email';
+import EmailProvider from 'next-auth/providers/email';
+import { TypeORMAdapter } from "@auth/typeorm-adapter";
+import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
 
-export default NextAuth({
-  providers: [
-    Providers.Credentials({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'your-email@example.com' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
-        // Here you should validate the credentials and return the user object or null
-        const user = { id: 1, name: 'John Doe', email: 'john.doe@example.com' }; // Replace with your validation logic
-        return user ? user : null;
-      }
-    }),
-    Providers.Google({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      authorization: {
-        params: {
-            prompt: "consent",
-            access_type: "offline",
-            response_type: "code"
-        }
-      }
-    }),
-  ],
-  database: process.env.DATABASE_URL, // Replace with your database URL
-  callbacks: {
-    async session(session, user) {
-      session.user.id = user.id;
-      return session;
+// Ensure environment variables are set
+const apiKey = process.env.EMAIL_API_KEY ?? '';
+const emailFrom = process.env.EMAIL_FROM ?? '';
+
+if (!apiKey || !emailFrom) {
+  throw new Error("Missing EMAIL_API_KEY or EMAIL_FROM environment variable");
+}
+
+const connectToDatabase = async () => {
+  const connectionOptions = await getConnectionOptions();
+  return createConnection({ ...connectionOptions, entities: [User, Session, Account]});
+}
+
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const connection = await connectToDatabase();
+
+  // Define the email provider with required parameters
+const emailProvider = EmailProvider({
+  type: "email",
+  maxAge: 60 * 60 * 24, // 24 hours
+
+  sendVerificationRequest: (params: {
+    identifier: string;
+    url: string;
+    token: string;
+    expires: Date; 
+    provider: EmailConfig;
+    theme: Theme;
+  }) => sendVerificationRequest({
+    ...params,
+    apiKey,
+    from: emailFrom,
+    provider: {
+      ...params.provider,
+      sendVerificationRequest: () => {},
+      options: {},
     },
-    async jwt(token, user) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    }
-  },
-  pages: {
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
-    error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
-    newUser: null // New users will be redirected here after being created
-  },
-  secret: process.env.SECRET
+  }),
 });
+
+return NextAuth(req, res, {
+  adapter: TypeORMAdapter(connection),
+  providers: [emailProvider],
+});
+ 
+};
+
+
