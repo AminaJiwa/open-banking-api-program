@@ -46,8 +46,9 @@ const emailProvider = EmailProvider({
   }),
 });
 
+const connectionOptions = await getConnectionOptions();
 return NextAuth(req, res, {
-  adapter: TypeORMAdapter(connection),
+  adapter: TypeORMAdapter(connectionOptions),
   providers: [emailProvider],
 });
  
