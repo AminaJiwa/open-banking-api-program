@@ -5,6 +5,8 @@ import { EmailConfig } from 'next-auth/providers/email';
 import EmailProvider from 'next-auth/providers/email';
 import { TypeORMAdapter } from "@auth/typeorm-adapter";
 import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
+import { User } from '@/app/entities/User';
+import { Session } from '@/app/entities/Session';
 
 // Ensure environment variables are set
 const apiKey = process.env.EMAIL_API_KEY ?? '';

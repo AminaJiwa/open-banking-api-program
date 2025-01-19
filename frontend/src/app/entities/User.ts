@@ -1,7 +1,9 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Session } from "./Session";
 
 @Entity()
 export class User{
+    //User information
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
@@ -33,8 +35,8 @@ export class User{
     @Column({ nullable: true})
     refreshToken?: string;
 
-    @Column({ type: "json", nullable: true })
     //List of permissions
+    @Column({ type: "json", nullable: true })
     scope?: string[];
 
     //Account Information
@@ -68,4 +70,8 @@ export class User{
 
     @UpdateDateColumn()
     updatedAt!: Date;
+
+    //Relationships
+    @OneToMany(() => Session, session => session.user)
+    sessions!: Session[];
 }
