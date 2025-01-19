@@ -7,7 +7,7 @@ import { User } from "./User";
 export class Session{
     //Session information
     @PrimaryGeneratedColumn("uuid")
-    id!: string;
+    sessionId!: string;
 
     @Index()
     @Column()

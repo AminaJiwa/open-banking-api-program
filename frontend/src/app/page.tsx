@@ -1,6 +1,6 @@
 import React from "react";
 import Dashboard from "./pages/dashboard/Dashboard";
-import scss from "./page.module.scss";
+import scss from "./pages/Home.module.scss";
 import Login from "./components/Login";
 import { useSession } from "next-auth/react";
 

@@ -1,11 +1,12 @@
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Session } from "./Session";
+import { Account } from "./Account";
 
 @Entity()
 export class User{
     //User information
     @PrimaryGeneratedColumn("uuid")
-    id!: string;
+    userId!: string;
 
     @Column()
     firstName!: string;
@@ -24,6 +25,12 @@ export class User{
     @Index()
     phone?: string;
 
+    @Column({ nullable: true })
+    address?: string;
+ 
+    @Column({ type: "date", nullable: true })
+    dateOfBirth?: Date;
+
     //Authentication
     @Column()
     passwordHash!: string;
@@ -39,30 +46,12 @@ export class User{
     @Column({ type: "json", nullable: true })
     scope?: string[];
 
-    //Account Information
-    @Index()
-    @Column()
-    accountId!: string;
-
-    @Column({ type: "enum", enum: ["savings", "checking"], default: "checking"})
-    accountType!: string;
-
-    @Column("decimal", { precision: 10, scale: 2, default: 0.00 })
-    balance!: number;
-
     //Security
     @Column({ default: false })
     mfaEnabled!: boolean;
 
     @Column("json", { nullable: true })
     mfaMethods?: string[];
-
-    //Profile Information
-    @Column({ nullable: true })
-    address?: string;
-
-    @Column({ type: "date", nullable: true })
-    dateOfBirth?: Date;
 
     //Metadata
     @CreateDateColumn()
@@ -74,4 +63,7 @@ export class User{
     //Relationships
     @OneToMany(() => Session, session => session.user)
     sessions!: Session[];
+
+    @OneToMany(() => Account, account => account.user)
+    accounts!: Account[];
 }
