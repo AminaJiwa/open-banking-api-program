@@ -1,18 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth, { Theme } from 'next-auth';
+import NextAuth from 'next-auth';
 import { sendVerificationRequest } from "./authSendRequest";
-import { EmailConfig } from 'next-auth/providers/email';
+import GitHubProvider from 'next-auth/providers/github';
 import EmailProvider from 'next-auth/providers/email';
 import { TypeORMAdapter } from "@auth/typeorm-adapter";
 import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
 import { User } from '@/app/entities/User';
 import { Session } from '@/app/entities/Session';
 import { Account } from '@/app/entities/Account';
-import Error from 'next/error';
+
 
 // Ensure environment variables are set
 const apiKey = process.env.EMAIL_API_KEY ?? '';
 const emailFrom = process.env.EMAIL_FROM ?? '';
+const gitHubClientId = process.env.GITHUB_CLIENT_ID ?? '';
+const gitHubClientSecret = process.env.GITHUB_CLIENT_SECRET ?? '';
 
 if (!apiKey || !emailFrom) {
   console.error("Missing EMAIL_API_KEY or EMAIL_FROM environment variable");
@@ -49,10 +51,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }),
     });
 
+    const githubProvider = GitHubProvider({
+      clientId: gitHubClientId,
+      clientSecret: gitHubClientSecret,
+    });
+
     const connectionOptions = await getConnectionOptions();
     return NextAuth(req, res, {
       adapter: TypeORMAdapter(connectionOptions),
-      providers: [emailProvider],
+      providers: [emailProvider, githubProvider],
+      session: {
+        strategy: "database",
+      },
     });
 
   } catch (error) {

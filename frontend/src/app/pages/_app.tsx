@@ -1,3 +1,5 @@
+"use client";
+
 import { SessionProvider } from "next-auth/react";
 import React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -8,11 +10,15 @@ import Header from "../components/Header";
 import Layout from "../components/Layout";
 import { AppProps } from "next/app";
 
-const ColorModeContext = React.createContext({
+interface ColorModeContextType {
+  toggleColorMode: () => void;
+}
+
+const ColorModeContext = React.createContext<ColorModeContextType>({
   toggleColorMode: () => {},
 });
 
-const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
+const App = ({ Component, pageProps: { session = null, ...pageProps } }: AppProps) => {
   const [mode, setMode] = React.useState<"light" | "dark">("dark");
   const colorMode = React.useMemo(
     () => ({
@@ -25,16 +31,12 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
 
   const darkThemeChosen = React.useMemo(
     () =>
-      createTheme({
-        ...darkTheme,
-      }),
+      createTheme(darkTheme),
     [mode]
   );
   const lightThemeChosen = React.useMemo(
     () =>
-      createTheme({
-        ...lightTheme,
-      }),
+      createTheme(lightTheme),
     [mode]
   );
 
