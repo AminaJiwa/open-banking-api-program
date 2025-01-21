@@ -1,6 +1,5 @@
 import { Box, Grid } from "@mui/material";
 import React from "react";
-import sccs from "../pages/Home.module.scss";
 const Dashboard = () => {
     return (
         <div>

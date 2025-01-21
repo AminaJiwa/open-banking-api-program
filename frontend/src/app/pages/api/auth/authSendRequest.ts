@@ -1,8 +1,18 @@
 import { SendVerificationRequestParams } from "next-auth/providers/email";
 
-export async function sendVerificationRequest(params: SendVerificationRequestParams & { apiKey: string, from: string}) {
-    const { identifier: to, provider, url, apiKey, from, expires, theme } = params;
+//Main function for sending an email with a link for user verification
+export async function sendVerificationRequest(
+  params: SendVerificationRequestParams & { apiKey: string, from: string}
+): Promise<void> {
+    const { identifier: to, url, apiKey, from, expires } = params;
     const { host } = new URL(url);
+
+    //For debugging 
+    if (process.env.NODE_ENV === "development") {
+      console.log("Sending verification email:", { to, url, host });
+    }
+
+    //API request
     const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -13,21 +23,23 @@ export async function sendVerificationRequest(params: SendVerificationRequestPar
             from: from, 
             to,
             subject: `Sign in to ${host}`,
-            html: html({ url, host}),
-            text: text({ url, host}),
+            html: html({ url, host }),
+            text: text({ url, host, expires}),
         }),
-    })
+    });
 
     if (!res.ok) {
-        throw new Error("Resend error: " + JSON.stringify(await res.json()))
+      const errorBody = await res.json();
+        throw new Error(
+          `Resend error: ${res.status} ${res.statusText} - ${JSON.stringify(errorBody, null, 2)}`
+        );
     }
-
 }
 
-function html(params: { url: string, host: string}) {
+function html(params: { url: string, host: string}): string {
     const { url, host } = params;
 
-    const escapedHost = host.replace(/\./g, "&#8203;.")
+    const escapedHost = escapeHtml(host);
 
     const brandColor = "#053b48";
     const color = {
@@ -69,10 +81,23 @@ function html(params: { url: string, host: string}) {
         </tr>
       </table>
     </body>
-    `
+    `;
 }
 
-function text(params: { url: string, host: string}) {
-    const { url, host } = params;
-    return `Sign in to ${host} by clicking on the following link: ${url}`
+function text(params: { url: string, host: string, expires: Date}): string {
+    const { url, host, expires } = params;
+    return `
+    <p>The link will expire on ${expires.toUTCString()}.</p>
+    Sign in to ${host} by clicking on the following link: ${url}
+    `;
+}
+
+//Escapes special characters in host string to prevent HTML injection attacks 
+function escapeHtml(string: string): string {
+  return string
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
