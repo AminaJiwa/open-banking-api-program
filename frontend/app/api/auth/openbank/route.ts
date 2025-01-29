@@ -1,35 +1,38 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // Handle POST request
-    const { code } = req.query;
-    
+export async function GET(req: NextRequest) {
+    const { searchParams } = new URL(req.url);
+    const code = searchParams.get("code");
 
     if (!code) {
-        return res.status(400).json({ error: "Missing authorisation code"});
+        return NextResponse.json({ error: "Missing authorization code" }, { status: 400 });
     }
 
     try {
-    //Exchange the authorisation code for an access token
-    const response = await fetch("https://sandbox.openbankproject.com/oauth/token", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-            client_id: process.env.OPENBANK_CLIENT_ID || "",
-            client_secret: process.env.OPENBANK_CLIENT_SECRET || "",
-            code: code.toString(),
-            redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/openbank`,
-            grant_type: "authorization_code",
-        }),
-    });
+        // Exchange the authorization code for an access token
+        const response = await fetch("https://sandbox.openbankproject.com/oauth/token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                client_id: process.env.OPENBANK_CLIENT_ID || "",
+                client_secret: process.env.OPENBANK_CLIENT_SECRET || "",
+                code,
+                redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/openbank`,
+                grant_type: "authorization_code",
+            }),
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    if (response.ok) {
+        if (!response.ok) {
+            return NextResponse.json({ error: data.error_description || "OAuth exchange failed" }, { status: 500 });
+        }
+
         const accessToken = data.access_token;
-        //Fetch data from Open Bank API
+
+        // Fetch banks data
         const openBankDataResponse = await fetch("https://sandbox.openbankproject.com/obp/v4.0.0/banks", {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -38,16 +41,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const openBankData = await openBankDataResponse.json();
 
-        if(!openBankDataResponse.ok) {
-            return res.redirect(`/pages/error?message=${encodeURIComponent(openBankData.error_description || "Failed to fetch Open Bank data")}`);
+        if (!openBankDataResponse.ok) {
+            return NextResponse.json({ error: openBankData.error_description || "Failed to fetch Open Bank data" }, { status: 500 });
         }
-        //Redirect to dashboard on home page
-        return res.redirect(`/pages/dashboard?banks=${encodeURIComponent(JSON.stringify(openBankData.banks))}`);
-    } else {
-        return res.redirect(`/pages/error?message=${encodeURIComponent(data.error_description || "OAuth exchange failed")}`);
+
+        return NextResponse.json({ banks: openBankData.banks });
+    } catch (error: any) {
+        console.error("Error:", error);
+        return NextResponse.json({ error: "Unexpected error occurred" }, { status: 500 });
     }
-} catch(error: any) {
-    console.error("Error:", error);
-    return res.redirect(`/pages/error?message=${encodeURIComponent("Unexpected error occured")}`);
-}
 }
