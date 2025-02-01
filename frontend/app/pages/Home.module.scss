@@ -1,71 +1,80 @@
-//Main
+// Main
 .main {
-    padding: 0 24px;
-    max-width: 85rem;
-    margin: auto;
+  padding: 0;
+  max-width: 85rem;
+  margin: 0 auto; 
 }
 
 .layout {
-    max-width: 85 rem;
-    margin: auto;
+  max-width: 85rem;
+  margin: 0 auto; 
 
-    @media screen and (min-width: 1700px) {
-        max-width: 92rem;
-    }
+  @media screen and (min-width: 1700px) {
+    max-width: 92rem;
+  }
 }
-//Footer
+
+// Header
+.header {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000; 
+}
+
+// Footer
 .footer {
-    position: absolute;
-    bottom: -1rem;
-    left: 0;
-    right: 0;
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  right: 0;
+  width: 100%;
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    list-style-type: none;
+    margin: auto;
     width: 100%;
-  
-    ul {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      list-style-type: none;
-      margin: auto;
-      width: 100%;
-    }
-  
-    li {
-      padding: 1rem;
-  
-      a {
-        text-decoration: none;
-  
-        &:hover {
-          text-decoration: underline;
-        }
+  }
+
+  li {
+    padding: 1rem;
+
+    a {
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
       }
     }
   }
+}
 
-  //Dashboard
-  .topCardsContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-  
-    @media screen and (min-width: 768px) {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-  }
-  
-  .dataCard {
-    padding: 20px;
-  }
+// Dashboard
+.topCardsContainer {
+  display: grid;
+  grid-template-columns: 1fr;
 
-  //Side Menu
-  .drawerHeader {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 1rem;
+  @media screen and (min-width: 768px) {
+    grid-template-columns: 1fr 1fr 1fr;
   }
-  
-  .link {
-    text-decoration: none;
-  }
+}
+
+.dataCard {
+  padding: 20px;
+}
+
+// Side Menu
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 1rem;
+}
+
+.link {
+  text-decoration: none;
+}

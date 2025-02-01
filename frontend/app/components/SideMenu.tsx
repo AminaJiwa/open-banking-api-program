@@ -42,9 +42,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
+  width: 0, // Set width to 0 when closed
   [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: 0, // Set width to 0 for larger screens as well
   },
 });
 
@@ -64,18 +64,18 @@ const menuListIcons = [
   <ExitToAppIcon />,
 ];
 
-const SideMenu = () => {
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const mobileCheck = useMediaQuery("(min-width: 600px)");
+interface SideMenuProps {
+  open: boolean; // Prop to control open/close state
+  onMenuToggle: () => void; // Prop to handle menu toggle
+}
 
-  const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
+const SideMenu: React.FC<SideMenuProps> = ({ open, onMenuToggle }) => {
+  const theme = useTheme();
+  const mobileCheck = useMediaQuery("(min-width: 600px)");
 
   const handleListItemButtonClick = (text: string) => {
     text === "Sign Out" ? signOut() : null;
-    setOpen(false);
+    onMenuToggle(); // Close the menu when an item is clicked
   };
 
   return (
@@ -83,15 +83,14 @@ const SideMenu = () => {
       variant="permanent"
       anchor="left"
       open={open}
-      className={scss.sideMenu}
       sx={{
-        width: drawerWidth,
+        width: open ? drawerWidth : 0, // Set width to 0 when closed
+        flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
-          left: 0,
-          top: mobileCheck ? 64 : 57,
-          flexShrink: 0,
-          whiteSpace: "nowrap",
+          width: open ? drawerWidth : 0, // Set width to 0 when closed
           boxSizing: "border-box",
+          top: mobileCheck ? 64 : 57, // Adjust this value to match your header height
+          height: mobileCheck ? "calc(100vh - 64px)" : "calc(100vh - 57px)", // Adjust height to fit below the header
           ...(open && {
             ...openedMixin(theme),
             "& .MuiDrawer-paper": openedMixin(theme),
@@ -104,12 +103,8 @@ const SideMenu = () => {
       }}
     >
       <div className={scss.drawerHeader}>
-        <IconButton onClick={handleDrawerToggle}>
-          {theme.direction === "rtl" ? (
-            <ChevronRightIcon />
-          ) : (
-            <ChevronLeftIcon />
-          )}
+        <IconButton onClick={onMenuToggle}>
+          {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </div>
       <Divider />
@@ -144,9 +139,9 @@ const SideMenu = () => {
                   primary={text}
                   sx={{
                     color: theme.palette.text.primary,
-                    opacity: open ? 1 : 0,
+                    opacity: open ? 1 : 0, // Hide text when closed
                   }}
-                />{" "}
+                />
               </ListItemButton>
             </NextLink>
           </ListItem>

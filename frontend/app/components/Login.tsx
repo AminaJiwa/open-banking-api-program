@@ -15,7 +15,7 @@ const Login = () => {
   }
   return (
     <>
-      <Button variant={"contained"} color={"success"} onClick={() => signIn("github", { callbackUrl: "/dashboard"})}>
+      <Button variant={"contained"} color={"success"} onClick={() => signIn("github")}>
         Sign in with github
       </Button>
     </>
