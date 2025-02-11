@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: "Authorisation code not found"});
     }
     //Exchange code for access token
-    const redirectUri = 'http://localhost:3000/api/openbank/callback';
+    const redirectUri = 'http://localhost:3000/api/auth/openbank/callback';
     const tokenUrl = 'https://apisandbox-oauth2.openbankproject.com/hydra-public/oauth2/token';
 
     const params = new URLSearchParams();
