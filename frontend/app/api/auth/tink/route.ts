@@ -25,34 +25,33 @@ export async function GET() {
 
         const accessToken = authData.access_token;
 
-        //Create test user
-        const createUserUrl = "https://api.tink.com/api/v1/user/create";
-        const userResponse = await fetch(createUserUrl, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "external_user_id": "user_123_abc",
-                "locale": "en_US",
-                "market": "GB",
-                "retention_class": "permanent"
-            }),
+        //Create test account
+        const listAccountsUrl = 'https://api.tink.com/api/v1/accounts/list';
+        const listAccountsResponse = await fetch(`${listAccountsUrl}?user_id=ae03cef445df4676876838133cb3218e`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
         });
-
-        console.log('User creation response status:', userResponse.status);
-        const rawUserResponse = await userResponse.text();
-        console.log('Raw user creation response:', rawUserResponse);
-
-        // Now try to parse the response as JSON
-        const userData = JSON.parse(rawUserResponse);
-
-        if (!userResponse.ok) {
-            throw new Error(userData.error || "Failed to create user with Tink");
+        
+        // Log the raw response for debugging
+        console.log('List accounts response status:', listAccountsResponse.status);
+        const rawListAccountsResponse = await listAccountsResponse.text();
+        console.log('Raw list accounts response:', rawListAccountsResponse);
+        
+        if (!listAccountsResponse.ok) {
+          throw new Error(`Failed to fetch accounts: ${rawListAccountsResponse}`);
         }
+        
+        // Parse the response as JSON
+        const accountsData = JSON.parse(rawListAccountsResponse);
+        console.log('Accounts:', accountsData);
+        // "user_id" : "ae03cef445df4676876838133cb3218e",
+        //"external_user_id" : "user_123_abc"
 
-        return NextResponse.json(userData);
+
+        return NextResponse.json(accountsData);
 
     } catch (error: any) {
         console.error("Failed to log in to Tink:", error.response?.data || error.message);

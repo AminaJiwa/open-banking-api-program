@@ -16,7 +16,7 @@ const Home: React.FC = () => {
   return (
     <main className={scss.main}>
       <ThemeProvider theme={darkTheme}>
-      {/* {session ? <Dashboard /> : <Login />} */}
+        <Login />
       <Dashboard />
       </ThemeProvider>
     </main>
