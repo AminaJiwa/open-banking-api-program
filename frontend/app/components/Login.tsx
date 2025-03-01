@@ -13,6 +13,8 @@ const Login = () => {
     authUrl.searchParams.set("response_type", "code");
     authUrl.searchParams.set("scope", "accounts:read, transactions:read, account-verification-reports:read");
     authUrl.searchParams.set("state", process.env.NEXT_PUBLIC_AUTH_SECRET || "");
+    authUrl.searchParams.set("test", "true"); // Enable test mode
+    authUrl.searchParams.set("demo", "true");
     
     console.log('Authorization URL:', authUrl.toString());
     window.location.href = authUrl.toString();

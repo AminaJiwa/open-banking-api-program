@@ -1,60 +1,76 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-    try {
-        //Authenticate using client credentials flow
-        const authUrl = "https://api.tink.com/api/v1/oauth/token";
-        const params = new URLSearchParams();
-        params.append("client_id", process.env.TINK_CLIENT_ID || "");
-        params.append("client_secret", process.env.TINK_CLIENT_SECRET || "");
-        params.append("grant_type", "client_credentials");
+  try {
+    // Step 1: Authenticate using client credentials flow
+    const authUrl = "https://api.tink.com/api/v1/oauth/token";
+    const params = new URLSearchParams();
+    params.append("client_id", process.env.NEXT_PUBLIC_TINK_CLIENT_ID || "");
+    params.append("client_secret", process.env.NEXT_PUBLIC_TINK_CLIENT_SECRET || "");
+    params.append("grant_type", "client_credentials");
 
-        const authResponse = await fetch(authUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: params,
-        });
+    const authResponse = await fetch(authUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
+    });
 
-        const authData = JSON.parse(await authResponse.text());
+    // Log the raw response for debugging
+    console.log("Authentication response status:", authResponse.status);
+    const rawAuthResponse = await authResponse.text();
+    console.log("Raw authentication response:", rawAuthResponse);
 
-        if (!authResponse.ok) {
-            throw new Error(authData.error || "Failed to authenticate with Tink");
-        }
+    if (!authResponse.ok) {
+      throw new Error(`Failed to authenticate: ${rawAuthResponse}`);
+    }
 
-        const accessToken = authData.access_token;
+    // Parse the response as JSON
+    const authData = JSON.parse(rawAuthResponse);
+    const accessToken = authData.access_token;
+    console.log("Access Token:", accessToken); // Log the access token
 
-        //Create test account
-        const listAccountsUrl = 'https://api.tink.com/api/v1/accounts/list';
-        const listAccountsResponse = await fetch(`${listAccountsUrl}?user_id=ae03cef445df4676876838133cb3218e`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        // Log the raw response for debugging
-        console.log('List accounts response status:', listAccountsResponse.status);
-        const rawListAccountsResponse = await listAccountsResponse.text();
-        console.log('Raw list accounts response:', rawListAccountsResponse);
-        
-        if (!listAccountsResponse.ok) {
-          throw new Error(`Failed to fetch accounts: ${rawListAccountsResponse}`);
-        }
-        
-        // Parse the response as JSON
-        const accountsData = JSON.parse(rawListAccountsResponse);
-        console.log('Accounts:', accountsData);
+    // Step 2: Create an account for the user
+    const createAccountUrl = "https://api.tink.com/api/v1/accounts/create";
+    const accountResponse = await fetch(createAccountUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: "ae03cef445df4676876838133cb3218e", 
+        name: "Checking Account",
+        type: "CHECKING",
+        balance: {
+          amount: 1000.0, // Initial balance
+          currency: "GBP", // Currency
+        },
+      }),
+    });
+
+    // Log the raw response for debugging
+    console.log("Create account response status:", accountResponse.status);
+    const rawAccountResponse = await accountResponse.text();
+    console.log("Raw create account response:", rawAccountResponse);
+
+    if (!accountResponse.ok) {
+      throw new Error(`Failed to create account: ${rawAccountResponse}`);
+    }
+
+    // Parse the response as JSON
+    const accountData = JSON.parse(rawAccountResponse);
+    console.log("Account created:", accountData);
+
+    return NextResponse.json(accountData);
+  } catch (error) {
+    console.error("Failed to create account:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
         // "user_id" : "ae03cef445df4676876838133cb3218e",
         //"external_user_id" : "user_123_abc"
 
 
-        return NextResponse.json(accountsData);
-
-    } catch (error: any) {
-        console.error("Failed to log in to Tink:", error.response?.data || error.message);
-        throw error;
-    }
-}
+      
