@@ -9,15 +9,14 @@ import { Session } from "next-auth";
 import Header from "./components/Header";
 import { ThemeProvider } from "@mui/material";
 import darkTheme from "./theme/darkTheme";
-import SideMenu from "./components/SideMenu";
 
 const Home: React.FC = () => {
   const { data: session } = useSession();
   return (
     <main className={scss.main}>
       <ThemeProvider theme={darkTheme}>
+        <Dashboard />
         <Login />
-      <Dashboard />
       </ThemeProvider>
     </main>
   );

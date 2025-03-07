@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // Step 1: Authenticate using client credentials flow
+    // Authenticate using client credentials flow
     const authUrl = "https://api.tink.com/api/v1/oauth/token";
     const params = new URLSearchParams();
     params.append("client_id", process.env.NEXT_PUBLIC_TINK_CLIENT_ID || "");
@@ -31,7 +31,7 @@ export async function GET() {
     const accessToken = authData.access_token;
     console.log("Access Token:", accessToken); // Log the access token
 
-    // Step 2: Create an account for the user
+    //Create an account for the user
     const createAccountUrl = "https://api.tink.com/api/v1/accounts/create";
     const accountResponse = await fetch(createAccountUrl, {
       method: "POST",
@@ -45,7 +45,7 @@ export async function GET() {
         type: "CHECKING",
         balance: {
           amount: 1000.0, // Initial balance
-          currency: "GBP", // Currency
+          currency: "GBP", 
         },
       }),
     });
