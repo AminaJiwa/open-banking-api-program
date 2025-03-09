@@ -1,7 +1,7 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, Avatar, Box, IconButton, useTheme } from "@mui/material";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import MenuIcon from "@mui/icons-material/Menu"; // Hamburger icon
+import MenuIcon from "@mui/icons-material/Menu"; 
 
 interface HeaderProps {
   onMenuToggle: () => void; // Callback function to toggle the side menu
@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       <Toolbar
         sx={{
           padding: 0,
-          minHeight: "64px !important", // Ensure the Toolbar has a fixed height
+          minHeight: "64px !important", 
           display: "flex",
           alignItems: "center",
         }}
@@ -40,7 +40,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           <MenuIcon />
         </IconButton>
 
-        {/* Logo replaced with a bank icon */}
         <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
           <AccountBalanceIcon
             sx={{ fontSize: 40, color: theme.palette.primary.main, marginRight: 2 }}
@@ -57,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           </Typography>
           <Avatar
             alt="User Avatar"
-            src="/path/to/user-avatar.png" // Replace with your user avatar path
+            src="/path/to/user-avatar.png" 
             sx={{ width: 40, height: 40 }}
           />
         </Box>
