@@ -4,33 +4,32 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark', 
     primary: {
-      main: '#4B4A54', 
+      main: '#673AB7', // Deep purple
     },
     secondary: {
-      main: '#82A0AA', 
+      main: '#00BCD4', // Cyan
     },
     error: {
-      main: '#FF5252',
+      main: '#FF5252', // Bright red
     },
     warning: {
-      main: '#FFC107', 
+      main: '#FFC107', // Golden yellow
     },
     info: {
-      main: '#2196F3', 
+      main: '#2196F3', // Bright blue
     },
     success: {
-      main: '#4CAF50', 
+      main: '#4CAF50', // Green
     },
     background: {
-      default: '#2A272A', 
-      paper: '#000000', 
+      default: '#1E1E1E', // Dark gray
+      paper: '#121212', // Very dark gray
     },
     text: {
-      primary: '#FFFFFF', 
-      secondary: '#CCCCCC', 
+      primary: '#F5F5F5', // Soft white
+      secondary: '#B0B0B0', // Light gray
     },
-    divider: '#A3CFCD',
+    divider: '#424242', // Dark gray
   },
 });
-
 export default darkTheme;

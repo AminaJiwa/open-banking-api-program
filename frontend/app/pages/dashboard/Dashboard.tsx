@@ -1,4 +1,6 @@
 "use client";
+import { Doughnut, Bar, Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from "chart.js";
 import { Box, ThemeProvider, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -13,6 +15,7 @@ import Header from "../../components/Header";
 import SideMenu from "../../components/SideMenu";
 import data from "../../utils/data.json";
 import darkTheme from "../../theme/darkTheme";
+import { useChartData } from "../../hook/useChartData";
 
 interface Payment {
   id: number;
@@ -76,13 +79,16 @@ const Dashboard: React.FC = () => {
     setPage(0);
   };
 
+  //Hook to get chart data
+  const { totalSpendingData, spendingByCategoryData, incomeVsExpensesData } = useChartData(data);
+
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   return (
     <ThemeProvider theme={darkTheme}>
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", paddingBottom: "60px" }}>
       {/* Header with Hamburger Icon */}
       <Header onMenuToggle={handleMenuToggle} />
 
@@ -107,7 +113,7 @@ const Dashboard: React.FC = () => {
         Welcome John Doe
         </Typography>
 
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <Paper sx={{ width: "50%", overflow: "hidden", marginLeft: "auto" }}>
           <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -155,6 +161,42 @@ const Dashboard: React.FC = () => {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>
+        
+        {/* Charts */}
+        <Box sx={{ width: "50%", marginBottom: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Total Spending
+            </Typography>
+            <Doughnut data={totalSpendingData} />
+          </Box>
+
+          <Box sx={{ width: "80%", marginBottom: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Spending by Category
+            </Typography>
+            <Bar
+              data={spendingByCategoryData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
+                  },
+                  title: {
+                    display: true,
+                    text: "Spending by Category",
+                  },
+                },
+              }}
+            />
+          </Box>
+
+          <Box sx={{ width: "50%", marginBottom: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Income vs. Expenses
+            </Typography>
+            <Pie data={incomeVsExpensesData} />
+          </Box>
       </Box>
     </Box>
     </ThemeProvider>
