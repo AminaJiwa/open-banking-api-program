@@ -1,6 +1,6 @@
 "use client";
 import { Doughnut, Bar, Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, PieController, DoughnutController } from "chart.js";
 import { Box, ThemeProvider, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -32,6 +32,19 @@ interface Column {
   align?: "right";
   format?: (value: string) => string;
 }
+
+// Register all required components
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  PieController,       
+  DoughnutController   
+);
 
 const columns: readonly Column[] = [
   { id: "Date", label: "Date", minWidth: 100 },
@@ -97,107 +110,112 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          marginLeft: isMenuOpen ? "240px" : "0", // Adjust margin based on menu state
-          transition: "margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms", // Smooth transition
-        }}
-      >
-        <Typography variant="h3" gutterBottom>
-        Dashboard
-        </Typography>
+  component="main"
+  sx={{
+    flexGrow: 1,
+    p: 3,
+    marginLeft: isMenuOpen ? "240px" : "0",
+    transition: "margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+  }}
+>
+  <Typography variant="h3" gutterBottom>
+    Dashboard
+  </Typography>
 
-        <Typography variant="h5" gutterBottom>
-        Welcome John Doe
-        </Typography>
+  <Typography variant="h5" gutterBottom>
+    Welcome John Doe
+  </Typography>
 
-        <Paper sx={{ width: "50%", overflow: "hidden", marginLeft: "auto" }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {payments
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((payment) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={payment.id}>
-                        {columns.map((column) => {
-                          const value = payment[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.format && typeof value === "string"
-                                ? column.format(value)
-                                : value}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={payments.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-        
-        {/* Charts */}
-        <Box sx={{ width: "50%", marginBottom: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Total Spending
-            </Typography>
-            <Doughnut data={totalSpendingData} />
-          </Box>
+  {/* Create a flex container for table and doughnut chart */}
+  <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
+    {/* Table - reduced width to make space for chart */}
+    <Paper sx={{ width: "60%", overflow: "hidden" }}>
+      <TableContainer sx={{ maxHeight: 440 }}>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {payments
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((payment) => {
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={payment.id}>
+                    {columns.map((column) => {
+                      const value = payment[column.id];
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === "string"
+                            ? column.format(value)
+                            : value}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={payments.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Paper>
+    
+    {/* Doughnut Chart - now aligned next to the table */}
+    <Paper sx={{ width: "35%", p: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        Total Spending
+      </Typography>
+      <Doughnut data={totalSpendingData} />
+    </Paper>
+  </Box>
 
-          <Box sx={{ width: "80%", marginBottom: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Spending by Category
-            </Typography>
-            <Bar
-              data={spendingByCategoryData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "top",
-                  },
-                  title: {
-                    display: true,
-                    text: "Spending by Category",
-                  },
-                },
-              }}
-            />
-          </Box>
+  {/* Other charts remain below */}
+  <Box sx={{ width: "80%", marginBottom: 4, mt: 3 }}>
+    <Typography variant="h6" gutterBottom>
+      Spending by Category
+    </Typography>
+    <Bar
+      data={spendingByCategoryData}
+      options={{
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          title: {
+            display: true,
+            text: "Spending by Category",
+          },
+        },
+      }}
+    />
+  </Box>
 
-          <Box sx={{ width: "50%", marginBottom: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Income vs. Expenses
-            </Typography>
-            <Pie data={incomeVsExpensesData} />
-          </Box>
-      </Box>
+  <Box sx={{ width: "50%", marginBottom: 4 }}>
+    <Typography variant="h6" gutterBottom>
+      Income vs. Expenses
+    </Typography>
+    <Pie data={incomeVsExpensesData} />
+  </Box>
+</Box>
     </Box>
     </ThemeProvider>
   );

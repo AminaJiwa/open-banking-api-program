@@ -14,30 +14,41 @@ export const useChartData = (data: Payment[]) => {
       datasets: [
         {
           label: "Total Spending",
-          data: [totalSpending],
+          data: [getTotalSpending],
           backgroundColor: ["#FF6384"],
           borderColor: ["#FFFFFF"],
           borderWidth: 1,
         },
       ],
     }),
-    [totalSpending]
+    [getTotalSpending]
   );
+
+  const categoryColours = [
+    "#36A2EB",
+    "#FF6384",
+    "#4BC0C0",
+    "#FFCE56",
+    "#9966FF",
+    "#FF9F40",
+  ];
 
   const spendingByCategoryData: ChartData = useMemo(
     () => ({
-      labels: Object.keys(spendingByCategory),
+      labels: Object.keys(getSpendingByCategory),
       datasets: [
         {
           label: "Spending by Category",
-          data: Object.values(spendingByCategory),
-          backgroundColor: "#36A2EB",
-          borderColor: "#FFFFFF",
+          data: Object.values(getSpendingByCategory),
+          backgroundColor: Object.keys(getSpendingByCategory).map(
+            (_, index) => categoryColours[index % categoryColours.length]
+          ),
+          borderColor:["#FFFFFF"],
           borderWidth: 1,
         },
       ],
     }),
-    [spendingByCategory]
+    [getSpendingByCategory]
   );
 
   const incomeVsExpensesData: ChartData = useMemo(
@@ -46,14 +57,14 @@ export const useChartData = (data: Payment[]) => {
       datasets: [
         {
           label: "Income vs. Expenses",
-          data: [incomeVsExpenses.income, incomeVsExpenses.expenses],
+          data: [getIncomeVsExpenses.income, getIncomeVsExpenses.expenses],
           backgroundColor: ["#4BC0C0", "#FFCE56"],
           borderColor: ["#FFFFFF"],
           borderWidth: 1,
         },
       ],
     }),
-    [incomeVsExpenses]
+    [getIncomeVsExpenses]
   );
 
   return {

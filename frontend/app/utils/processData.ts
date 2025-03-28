@@ -3,7 +3,7 @@ import data from "./data.json";
 export interface Payment {
     id: number;
     Date: string;
-    Category: string;
+    Payment: string;
     Amount: string;
     Type: string;
 }
@@ -38,10 +38,10 @@ export const spendingByCategory = (data: Payment[]): SpendingByCategory => {
     return data
     .filter((item) => item.Type === "Expense")
     .reduce((acc, item) => {
-        if (!acc[item.Category]) {
-            acc[item.Category] = 0;
+        if (!acc[item.Payment]) {
+            acc[item.Payment] = 0;
         }
-        acc[item.Category] += parseFloat(item.Amount.replace("£", ""));
+        acc[item.Payment] += parseFloat(item.Amount.replace("£", ""));
         return acc;
     }, {} as SpendingByCategory);
 
